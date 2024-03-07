@@ -1539,3 +1539,42 @@ window.particlesJS.load = function(tag_id, path_config_json, callback){
   xhr.send();
 
 };
+
+/* Add touch event listeners */
+pJS.canvas.el.addEventListener('touchstart', function(e) {
+    pJS.tmp.touches.startX = e.touches[0].clientX;
+    pJS.tmp.touches.startY = e.touches[0].clientY;
+    pJS.tmp.touches.touching = true;
+
+    /* Handle touch interactions */
+    handleTouchInteraction(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+pJS.canvas.el.addEventListener('touchmove', function(e) {
+    if (pJS.tmp.touches.touching) {
+        pJS.tmp.touches.moveX = e.touches[0].clientX;
+        pJS.tmp.touches.moveY = e.touches[0].clientY;
+
+        /* Handle touch interactions */
+        handleTouchInteraction(e.touches[0].clientX, e.touches[0].clientY);
+    }
+});
+
+pJS.canvas.el.addEventListener('touchend', function(e) {
+    pJS.tmp.touches.touching = false;
+});
+
+/* Function to handle touch interactions */
+function handleTouchInteraction(touchX, touchY) {
+    /* Loop through particles and check for interaction */
+    for (var i = 0; i < pJS.particles.array.length; i++) {
+        var p = pJS.particles.array[i];
+        var distance = Math.sqrt(Math.pow(touchX - p.x, 2) + Math.pow(touchY - p.y, 2));
+
+        /* If particle is within interaction range, trigger interaction mode */
+        if (distance <= pJS.interactivity.modes.grab.distance) {
+            /* Trigger interaction mode */
+            pJS.fn.modes.grabParticle(p);
+        }
+    }
+}
